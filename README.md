@@ -3,6 +3,12 @@ Command line interface built on top of aws cli to provide an interactive interfa
 
 # requirements
 - aws-cli
+- aws credentials
+    ```sh
+    export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+    export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+    export AWS_DEFAULT_REGION=us-west-2
+    ```
 
 # Resources
 - Written alongside [Command Line Applications in Rust](https://rust-cli.github.io/book/index.html)
