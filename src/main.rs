@@ -1,4 +1,5 @@
 use clap::Parser;
+use std::io;
 
 #[derive(Parser, Debug)]
 struct Args {
@@ -22,4 +23,15 @@ enum Commands {
 fn main() {
     let args = Args::parse();
     println!("{args:?}");
+
+    loop {
+        let mut cmd = String::new();
+        io::stdin().read_line(&mut cmd).expect("Failed to parse command");
+        let cmd_vec: Vec<_> = cmd.split_whitespace().collect(); 
+        match cmd_vec[0] {
+            "exit" => break,
+            _ => println!("{cmd_vec:?}")
+            
+        }
+    }
 }
