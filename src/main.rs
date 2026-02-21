@@ -1,6 +1,7 @@
 use clap::Parser;
 use std::io;
 use std::process::Command;
+use ratatui::{DefaultTerminal, Frame};
 
 #[derive(Parser, Debug)]
 struct Args {
@@ -22,10 +23,7 @@ enum Commands {
     Tree,
 }
 
-fn main() {
-    let args = Args::parse();
-    println!("{args:?}");
-
+fn arg_loop() {
     loop {
         let mut cmd = String::new();
         io::stdin().read_line(&mut cmd).expect("Failed to parse command");
@@ -56,4 +54,28 @@ fn main() {
             
         }
     }
+}
+
+// fn main() {
+//     let args = Args::parse();
+//     println!("{args:?}");
+// }
+
+fn main() -> color_eyre::Result<()> {
+    color_eyre::install()?;
+    ratatui::run(app)?;
+    Ok(())
+}
+
+fn app(terminal: &mut DefaultTerminal) -> std::io::Result<()> {
+    loop {
+        terminal.draw(render)?;
+        if crossterm::event::read()?.is_key_press() {
+            break Ok(());
+        }
+    }
+}
+
+fn render(frame: &mut Frame) {
+    frame.render_widget("hello world", frame.area());
 }
