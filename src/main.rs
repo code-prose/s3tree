@@ -33,19 +33,23 @@ fn main() {
         match cmd_vec[0] {
             "exit" => break,
             "ls" => {
+                // -a? -l?
                 let res = Command::new("ls").spawn();
                 println!("{res:?}");
             },
             "cd" => {
+                // cd foo/bar/?
                 println!("change dir!");
             },
             "mv" => {
                 println!("move!");
             },
             "rm" => {
+                // do I really want to take something like -rf?
                 println!("remove!");
             }
             "cp" => {
+                // how can I differentiate what is s3 and what is local?
                 println!("copy!");
             }
             _ => println!("{cmd_vec:?}")
