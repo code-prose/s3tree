@@ -36,6 +36,18 @@ fn main() {
                 let res = Command::new("ls").spawn();
                 println!("{res:?}");
             },
+            "cd" => {
+                println!("change dir!");
+            },
+            "mv" => {
+                println!("move!");
+            },
+            "rm" => {
+                println!("remove!");
+            }
+            "cp" => {
+                println!("copy!");
+            }
             _ => println!("{cmd_vec:?}")
             
         }
