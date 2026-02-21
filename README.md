@@ -13,3 +13,4 @@ Command line interface built on top of aws cli to provide an interactive interfa
 # Resources
 - Written alongside [Command Line Applications in Rust](https://rust-cli.github.io/book/index.html)
 - Built on top of [aws cli](https://aws.amazon.com/cli/)
+- Do I want to look into [ratatui](https://ratatui.rs/examples/apps/demo/)?

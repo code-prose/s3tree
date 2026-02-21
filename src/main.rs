@@ -1,5 +1,6 @@
 use clap::Parser;
 use std::io;
+use std::process::Command;
 
 #[derive(Parser, Debug)]
 struct Args {
@@ -11,6 +12,7 @@ struct Args {
     interactive: bool
 }
 
+// What am I going to use this for?
 #[derive(Parser, Debug)]
 enum Commands {
     Copy,
@@ -30,6 +32,10 @@ fn main() {
         let cmd_vec: Vec<_> = cmd.split_whitespace().collect(); 
         match cmd_vec[0] {
             "exit" => break,
+            "ls" => {
+                let res = Command::new("ls").spawn();
+                println!("{res:?}");
+            },
             _ => println!("{cmd_vec:?}")
             
         }
