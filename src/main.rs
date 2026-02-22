@@ -20,8 +20,6 @@ pub struct App {
 }
 
 impl App {
-
-    /// runs the application's main loop until the user quits
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
         while !self.exit {
             terminal.draw(|frame| self.draw(frame))?;
@@ -85,10 +83,12 @@ impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let title = Line::from(" Counter App Tutorial ".bold());
         let instructions = Line::from(vec![
-            " Decrement ".into(),
-            "<Left>".blue().bold(),
-            " Increment ".into(),
-            "<Right>".blue().bold(),
+            " Down ".into(),
+            "<j / down>".blue().bold(),
+            " Up ".into(),
+            "<k / up>".blue().bold(),
+            " Enter directory ".into(),
+            "<Enter>".blue().bold(),
             " Quit ".into(),
             "<Q> ".blue().bold(),
         ]);
