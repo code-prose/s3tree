@@ -51,6 +51,12 @@ impl App {
             KeyCode::Char('q') => self.exit(),
             KeyCode::Left => self.decrement_counter(),
             KeyCode::Right => self.increment_counter(),
+            // I want to handle j - k - up -down for navigation between buckets
+            // I also want to handle enter... this could depend on whether the person is hovering
+            // ../ or a directory... or even an item... Could I make it so a person could read?
+            // Would I do this by doing aws s3 cp into some buffer and then displaying it? Then
+            // what if the person wants to make changes? Could I also enable this by writing the
+            // buffer back out to s3?
             _ => {}
         }
     }
