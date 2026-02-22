@@ -51,6 +51,12 @@ impl App {
             KeyCode::Char('q') => self.exit(),
             KeyCode::Left => self.decrement_counter(),
             KeyCode::Right => self.increment_counter(),
+            KeyCode::Char('j') => todo!(),
+            KeyCode::Char('k') => todo!(),
+            KeyCode::Enter => {
+                todo!()
+                // do I have to handle something here regarding what is hovered?
+            }
             // I want to handle j - k - up -down for navigation between buckets
             // I also want to handle enter... this could depend on whether the person is hovering
             // ../ or a directory... or even an item... Could I make it so a person could read?
