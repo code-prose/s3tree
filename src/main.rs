@@ -13,10 +13,15 @@ use ratatui::{
     DefaultTerminal, Frame,
 };
 
+struct Directory {
+    children: Vec<Box<Directory>>,
+    parent: Box<Directory>,
+}
+
 #[derive(Debug, Default)]
 pub struct App {
-    counter: u8,
-    exit: bool,
+    curr_dir: String,
+    exit: bool
 }
 
 impl App {
@@ -47,8 +52,6 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
-            KeyCode::Left => self.decrement_counter(),
-            KeyCode::Right => self.increment_counter(),
             KeyCode::Char('j') => todo!(),
             KeyCode::Char('k') => todo!(),
             KeyCode::Enter => {
@@ -69,14 +72,9 @@ impl App {
         self.exit = true;
     }
 
-    fn increment_counter(&mut self) {
-        self.counter += 1;
+    fn current_directory(&mut self, new: String) {
+        self.directory = new;
     }
-
-    fn decrement_counter(&mut self) {
-        self.counter -= 1;
-    }
-
 }
 
 impl Widget for &App {
