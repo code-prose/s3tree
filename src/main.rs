@@ -13,11 +13,22 @@ use aws_sdk_s3 as s3;
 //     widgets::{Block, Paragraph, Widget},
 //     DefaultTerminal, Frame,
 // };
+//
+struct Root {
+    children: Vec<Box<Directory>>
+}
+
+enum Parent {
+    Directory(Box<Directory>),
+    Parent(Root),
+}
 
 struct Directory {
     children: Vec<Box<Directory>>,
-    parent: Box<Directory>,
+    parent: Parent,
 }
+
+
 
 // #[derive(Debug, Default)]
 // pub struct App {
@@ -136,9 +147,6 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str) -> Result<(), s3::E
         match cmd_vec[0] {
             "exit" => break,
             "ls" => {
-                // -a? -l?
-                // let res = Command::new("ls").spawn();
-                // println!("{res:?}");
                 list_bucket(client, bucket).await?;
             },
             "cd" => {
@@ -181,6 +189,13 @@ async fn main() -> Result<(), s3::Error> {
     Ok(())
 }
 
+fn create_directories() -> Directory {
+    let children: Vec<Box<Directory>> = Vec::new();
+    let dirs = Directory{ parent: None, children: children };
+
+    dirs
+}
+
 
 
 async fn list_bucket(
@@ -194,14 +209,11 @@ async fn list_bucket(
         .into_paginator()
         .send();
 
-    println!("{objects:?}");
-
     println!("key\tetag\tlast_modified\tstorage_class");
     while let Some(result) = objects.next().await {
         match result {
             Ok(object) => {
                 for item in object.contents() {
-                    println!("{item:?}");
                     println!(
                         "{}\t{}\t{}\t{}",
                         item.key().unwrap_or_default(),
