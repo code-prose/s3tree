@@ -73,7 +73,7 @@ impl App {
     }
 
     fn current_directory(&mut self, new: String) {
-        self.directory = new;
+        self.curr_dir = new;
     }
 }
 
@@ -90,20 +90,20 @@ impl Widget for &App {
             " Quit ".into(),
             "<Q> ".blue().bold(),
         ]);
-        let block = Block::bordered()
-            .title(title.centered())
-            .title_bottom(instructions.centered())
-            .border_set(border::THICK);
-
-        let counter_text = Text::from(vec![Line::from(vec![
-            "Value: ".into(),
-            self.counter.to_string().yellow(),
-        ])]);
-
-        Paragraph::new(counter_text)
-            .centered()
-            .block(block)
-            .render(area, buf);
+        // let block = Block::bordered()
+        //     .title(title.centered())
+        //     .title_bottom(instructions.centered())
+        //     .border_set(border::THICK);
+        //
+        // let counter_text = Text::from(vec![Line::from(vec![
+        //     "Value: ".into(),
+        //     self.counter.to_string().yellow(),
+        // ])]);
+        //
+        // Paragraph::new(counter_text)
+        //     .centered()
+        //     .block(block)
+        //     .render(area, buf);
     }
 }
 

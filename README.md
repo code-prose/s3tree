@@ -15,3 +15,4 @@ Command line interface built on top of aws cli to provide an interactive interfa
 - Built on top of [aws cli](https://aws.amazon.com/cli/)
 - Do I want to look into [ratatui](https://ratatui.rs/examples/apps/demo/)?
 - Built on top of [ELM Architecture](https://guide.elm-lang.org/architecture/)
+- [LocalStack](https://www.localstack.cloud/) to emulate S3 bucket for development
