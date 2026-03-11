@@ -189,11 +189,11 @@ async fn main() -> Result<(), s3::Error> {
     Ok(())
 }
 
-fn create_directories() -> Directory {
+fn create_directories() -> Root {
     let children: Vec<Box<Directory>> = Vec::new();
-    let dirs = Directory{ parent: None, children: children };
+    let root = Root{ children: children };
 
-    dirs
+    root
 }
 
 
