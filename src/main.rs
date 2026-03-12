@@ -1,10 +1,10 @@
+use aws_sdk_s3 as s3;
 use clap::Parser;
 use std::io;
-use aws_sdk_s3 as s3;
 
 struct Root {
     children: Vec<Box<Directory>>,
-    name: String
+    name: String,
 }
 
 enum Parent {
@@ -15,7 +15,7 @@ enum Parent {
 struct Directory {
     children: Vec<Box<Directory>>,
     parent: Parent,
-    name: String
+    name: String,
 }
 
 #[derive(Parser, Debug)]
@@ -25,7 +25,7 @@ struct Args {
 
     // Do I even care about making this non-interactive?
     #[arg(short, long, default_value_t = false)]
-    interactive: bool
+    interactive: bool,
 }
 
 // What am I going to use this for?
@@ -43,21 +43,23 @@ enum Commands {
 async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, root: Root) -> Result<(), s3::Error> {
     loop {
         let mut cmd = String::new();
-        io::stdin().read_line(&mut cmd).expect("Failed to parse command");
-        let cmd_vec: Vec<_> = cmd.split_whitespace().collect(); 
+        io::stdin()
+            .read_line(&mut cmd)
+            .expect("Failed to parse command");
+        let cmd_vec: Vec<_> = cmd.split_whitespace().collect();
         match cmd_vec[0] {
             "exit" => break,
             "ls" => {
                 // list_bucket(client, bucket).await?;
                 println!("ls!");
-            },
+            }
             "cd" => {
                 // cd foo/bar/?
                 println!("change dir!");
-            },
+            }
             "mv" => {
                 println!("move!");
-            },
+            }
             "rm" => {
                 // do I really want to take something like -rf?
                 println!("remove!");
@@ -66,8 +68,7 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, root: Root) -> Resu
                 // how can I differentiate what is s3 and what is local?
                 println!("copy!");
             }
-            _ => println!("{cmd_vec:?}")
-            
+            _ => println!("{cmd_vec:?}"),
         }
     }
     Ok(())
@@ -98,17 +99,15 @@ async fn main() -> Result<(), s3::Error> {
 
 fn create_directories(bucket: &str) -> Root {
     let children: Vec<Box<Directory>> = Vec::new();
-    let root = Root{ children: children, name: bucket.to_string() };
+    let root = Root {
+        children: children,
+        name: bucket.to_string(),
+    };
 
     root
 }
 
-
-
-async fn list_bucket(
-    client: &aws_sdk_s3::Client,
-    bucket: &str,
-) -> Result<Vec<String>, s3::Error> {
+async fn list_bucket(client: &aws_sdk_s3::Client, bucket: &str) -> Result<Vec<String>, s3::Error> {
     // List the buckets in this account
     let mut objects = client
         .list_objects_v2()
@@ -137,12 +136,23 @@ async fn list_bucket(
                         keys.push(key.to_string());
                     }
                 }
-            },
+            }
             Err(e) => {
                 println!("{e:?}");
             }
         }
     }
+
+    Ok(keys)
+}
+
+async fn put_bucket(
+    client: &aws_sdk_s3::Client,
+    bucket: &str,
+    src: String,
+    dst: String,
+) -> Result<(), s3::Error> {
+    todo!("Implement this...")
     // Prepare a ByteStream around the file, and upload the object using that ByteStream.
     // let body = aws_sdk_s3::primitives::ByteStream::from_path(filepath)
     //     .await
@@ -159,11 +169,8 @@ async fn list_bucket(
     //     .send()
     //     .await?;
 
-
     // Retrieve the just-uploaded object.
     // let resp = client.get_object().bucket(bucket).key(key).send().await?;
     // println!("etag: {}", resp.e_tag().unwrap_or("(missing)"));
     // println!("version: {}", resp.version_id().unwrap_or("(missing)"));
-
-    Ok(keys)
 }
