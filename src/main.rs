@@ -84,7 +84,7 @@ async fn main() -> Result<(), s3::Error> {
         .force_path_style(force_path_style)
         .build();
     let client = aws_sdk_s3::Client::from_conf(s3_config);
-    let directories: Root = create_directories(&args.bucket);
+    let directories: Root = create_directories(&client, &args.bucket);
     // TODO:
     // Will need to handle some type of exceptions here... Might want to handle in the arg loop
     let result = arg_loop(&client, &args.bucket, directories).await;
@@ -97,12 +97,13 @@ async fn main() -> Result<(), s3::Error> {
     Ok(())
 }
 
-fn create_directories(bucket: &str) -> Root {
+fn create_directories(client: &aws_sdk_s3::Client, bucket: &str) -> Root {
     let children: Vec<Box<Directory>> = Vec::new();
     let root = Root {
         children: children,
         name: bucket.to_string(),
     };
+    let keys = list_bucket(client, bucket);
 
     root
 }
