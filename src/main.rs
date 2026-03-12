@@ -15,7 +15,8 @@ use aws_sdk_s3 as s3;
 // };
 //
 struct Root {
-    children: Vec<Box<Directory>>
+    children: Vec<Box<Directory>>,
+    name: String
 }
 
 enum Parent {
@@ -26,6 +27,7 @@ enum Parent {
 struct Directory {
     children: Vec<Box<Directory>>,
     parent: Parent,
+    name: String
 }
 
 
@@ -130,6 +132,8 @@ struct Args {
 }
 
 // What am I going to use this for?
+// Do I really need this or am I constructing this for the sake of using language features?
+// If I do use it, do I need to create a impl from_string?
 #[derive(Parser, Debug)]
 enum Commands {
     Copy,
@@ -189,9 +193,9 @@ async fn main() -> Result<(), s3::Error> {
     Ok(())
 }
 
-fn create_directories() -> Root {
+fn create_directories(bucket: &str) -> Root {
     let children: Vec<Box<Directory>> = Vec::new();
-    let root = Root{ children: children };
+    let root = Root{ children: children, name: bucket.to_string() };
 
     root
 }
