@@ -48,7 +48,8 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, root: Root) -> Resu
         match cmd_vec[0] {
             "exit" => break,
             "ls" => {
-                list_bucket(client, bucket).await?;
+                // list_bucket(client, bucket).await?;
+                println!("ls!");
             },
             "cd" => {
                 // cd foo/bar/?
@@ -107,7 +108,7 @@ fn create_directories(bucket: &str) -> Root {
 async fn list_bucket(
     client: &aws_sdk_s3::Client,
     bucket: &str,
-) -> Result<(), s3::Error> {
+) -> Result<Vec<String>, s3::Error> {
     // List the buckets in this account
     let mut objects = client
         .list_objects_v2()
@@ -116,6 +117,7 @@ async fn list_bucket(
         .send();
 
     println!("key\tetag\tlast_modified\tstorage_class");
+    let mut keys: Vec<String> = Vec::new();
     while let Some(result) = objects.next().await {
         match result {
             Ok(object) => {
@@ -131,6 +133,9 @@ async fn list_bucket(
                             .map(|sc| format!("{sc}"))
                             .unwrap_or_default()
                     );
+                    if let Some(key) = item.key() {
+                        keys.push(key.to_string());
+                    }
                 }
             },
             Err(e) => {
@@ -160,5 +165,5 @@ async fn list_bucket(
     // println!("etag: {}", resp.e_tag().unwrap_or("(missing)"));
     // println!("version: {}", resp.version_id().unwrap_or("(missing)"));
 
-    Ok(())
+    Ok(keys)
 }
