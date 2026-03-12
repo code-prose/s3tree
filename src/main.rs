@@ -143,7 +143,7 @@ enum Commands {
     Tree,
 }
 
-async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str) -> Result<(), s3::Error> {
+async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, root: Root) -> Result<(), s3::Error> {
     loop {
         let mut cmd = String::new();
         io::stdin().read_line(&mut cmd).expect("Failed to parse command");
@@ -185,11 +185,16 @@ async fn main() -> Result<(), s3::Error> {
         .force_path_style(force_path_style)
         .build();
     let client = aws_sdk_s3::Client::from_conf(s3_config);
+    let directories: Root = create_directories(&args.bucket);
     // TODO:
     // Will need to handle some type of exceptions here... Might want to handle in the arg loop
-    let result = arg_loop(&client, &args.bucket).await;
+    let result = arg_loop(&client, &args.bucket, directories).await;
 
     todo!("Need to get this to work with both LocalStack and normal AWS pathing");
+
+    println!("{result:?}");
+    todo!("Use this result to handle exceptions");
+
     Ok(())
 }
 
