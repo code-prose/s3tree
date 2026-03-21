@@ -1,22 +1,24 @@
 use aws_sdk_s3 as s3;
 use clap::Parser;
 use std::io;
+use std::collections::HashMap;
 
-struct Root {
-    children: Vec<Box<Directory>>,
-    name: String,
-}
 
-enum Parent {
-    Directory(Box<Directory>),
-    Parent(Root),
-}
-
-struct Directory {
-    children: Vec<Box<Directory>>,
-    parent: Parent,
-    name: String,
-}
+// Sad to see this go
+// struct Root {
+//     children: Vec<Box<Directory>>,
+//     name: String,
+// }
+// enum Parent {
+//     Directory(Box<Directory>),
+//     Parent(Root),
+// }
+//
+// struct Directory {
+//     children: Vec<Box<Directory>>,
+//     parent: Parent,
+//     name: String,
+// }
 
 #[derive(Parser, Debug)]
 struct Args {
@@ -28,6 +30,7 @@ struct Args {
     interactive: bool,
 }
 
+type DirectoryTree = HashMap<String, Vec<String>>;
 // What am I going to use this for?
 // Do I really need this or am I constructing this for the sake of using language features?
 // If I do use it, do I need to create a impl from_string?
@@ -40,7 +43,7 @@ enum Commands {
     Tree,
 }
 
-async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, root: Root) -> Result<(), s3::Error> {
+async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, tree: DirectoryTree) -> Result<(), s3::Error> {
     loop {
         let mut cmd = String::new();
         io::stdin()
@@ -105,7 +108,7 @@ async fn main() -> Result<(), s3::Error> {
         .force_path_style(force_path_style)
         .build();
     let client = aws_sdk_s3::Client::from_conf(s3_config);
-    let directories: Root = create_directories(&client, &args.bucket);
+    let directories = create_directories(&client, &args.bucket).await?;
     // TODO:
     // Will need to handle some type of exceptions here... Might want to handle in the arg loop
     let result = arg_loop(&client, &args.bucket, directories).await;
@@ -118,19 +121,34 @@ async fn main() -> Result<(), s3::Error> {
     Ok(())
 }
 
-async fn create_directories(client: &aws_sdk_s3::Client, bucket: &str) -> Result<Root, s3::Error> {
-    let children: Vec<Box<Directory>> = Vec::new();
-    let root = Root {
-        children: children,
-        name: bucket.to_string(),
-    };
+async fn create_directories(client: &aws_sdk_s3::Client, bucket: &str) -> Result<DirectoryTree, s3::Error> {
+    let directory_tree = DirectoryTree::new();
     let keys = list_bucket(client, bucket).await?;
     for key in keys {
-        let split: Vec<String> = split_path(key);
+        let splits: Vec<String> = split_path(key);
+        // there is a consideration here to make..
+        // but given that "directories" don't really exist in s3 - it shouldn't cause any issues
+        if splits.len() == 0 { continue; }
+        let path = splits[0].clone();
+        let vec_len = splits.clone().len() - 1;
+        for i in (0..vec_len) {
+            if directory_tree.contains_key(splits[i]) { continue; }
+            else {
+                let mut children: Vec<String> = Vec::new();
+                // How do I get the child in here if it is the next part of the path?
+                if (i < vec_len - 1) {
+                    children.append(String::from("something???"));
+                }
+                let ref = directory_tree.get_mut(splits[i])
+                directory_tree.
+
+                }
+            }
+        }
 
     }
 
-    Ok(root)
+    Ok(directory_tree)
 }
 
 fn split_path(key: String) -> Vec<String>{
