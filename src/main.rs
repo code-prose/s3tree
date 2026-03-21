@@ -61,7 +61,6 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, root: Root) -> Resu
                 println!("move!");
             }
             "rm" => {
-                // do I really want to take something like -rf?
                 println!("remove!");
             }
             "lcp" => {
@@ -119,15 +118,23 @@ async fn main() -> Result<(), s3::Error> {
     Ok(())
 }
 
-fn create_directories(client: &aws_sdk_s3::Client, bucket: &str) -> Root {
+async fn create_directories(client: &aws_sdk_s3::Client, bucket: &str) -> Result<Root, s3::Error> {
     let children: Vec<Box<Directory>> = Vec::new();
     let root = Root {
         children: children,
         name: bucket.to_string(),
     };
-    let keys = list_bucket(client, bucket);
+    let keys = list_bucket(client, bucket).await?;
+    for key in keys {
+        let split: Vec<String> = split_path(key);
 
-    root
+    }
+
+    Ok(root)
+}
+
+fn split_path(key: String) -> Vec<String>{
+    key.split("/").map(|v| v.to_string()).collect::<Vec<_>>()
 }
 
 async fn list_bucket(client: &aws_sdk_s3::Client, bucket: &str) -> Result<Vec<String>, s3::Error> {
