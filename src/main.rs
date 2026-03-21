@@ -64,9 +64,31 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, root: Root) -> Resu
                 // do I really want to take something like -rf?
                 println!("remove!");
             }
-            "cp" => {
+            "lcp" => {
                 // how can I differentiate what is s3 and what is local?
-                println!("copy!");
+                if cmd_vec.len() == 1 {
+                    println!("Usage:                           ");
+                    println!("  lcp [fully qualified machine path]  [s3 dst path]:");
+                }
+                println!("local copy!");
+
+            }
+            "cp" => {
+                if cmd_vec.len() == 1 {
+                    println!("Usage:                           ");
+                    println!("  cp [s3 src path] [s3 dst path]:");
+                }
+                println!("s3 copy!")
+
+            }
+            "help" => {
+                println!("ls: lists all objects in current directory");
+                println!("cd: changes to directory");
+                println!("mv: moves an s3 object from src to dst");
+                println!("rm: removes an s3 object");
+                println!("lcp: copies an object from machine to s3 or s3 to machine");
+                println!("cp: copies an s3 object from src to dst");
+
             }
             _ => println!("{cmd_vec:?}"),
         }
@@ -150,28 +172,28 @@ async fn list_bucket(client: &aws_sdk_s3::Client, bucket: &str) -> Result<Vec<St
 async fn put_bucket(
     client: &aws_sdk_s3::Client,
     bucket: &str,
-    src: String,
+    src: String,  // How the fuck am I going to get this? do I just want a local file path?
     dst: String,
 ) -> Result<(), s3::Error> {
-    todo!("Implement this...")
     // Prepare a ByteStream around the file, and upload the object using that ByteStream.
-    // let body = aws_sdk_s3::primitives::ByteStream::from_path(filepath)
-    //     .await
-    //     .map_err(|err| {
-    //         S3ExampleError::new(format!(
-    //             "Failed to create bytestream for {filepath:?} ({err:?})"
-    //         ))
-    //     })?;
-    // let resp = client
-    //     .put_object()
-    //     .bucket(bucket)
-    //     .key(key)
-    //     .body(body)
-    //     .send()
-    //     .await?;
-
+    let body = aws_sdk_s3::primitives::ByteStream::from_path(filepath)
+        .await
+        .map_err(|err| {
+            S3ExampleError::new(format!(
+                "Failed to create bytestream for {filepath:?} ({err:?})"
+            ))
+        })?;
+    let resp = client
+        .put_object()
+        .bucket(bucket)
+        .key(dst)
+        .body(body)
+        .send()
+        .await?;
+    
     // Retrieve the just-uploaded object.
-    // let resp = client.get_object().bucket(bucket).key(key).send().await?;
-    // println!("etag: {}", resp.e_tag().unwrap_or("(missing)"));
-    // println!("version: {}", resp.version_id().unwrap_or("(missing)"));
+    let resp = client.get_object().bucket(bucket).key(key).send().await?;
+    println!("etag: {}", resp.e_tag().unwrap_or("(missing)"));
+    println!("version: {}", resp.version_id().unwrap_or("(missing)"));
+    Ok(())
 }
