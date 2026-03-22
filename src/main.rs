@@ -129,25 +129,22 @@ async fn create_directories(client: &aws_sdk_s3::Client, bucket: &str) -> Result
         // there is a consideration here to make..
         // but given that "directories" don't really exist in s3 - it shouldn't cause any issues
         if splits.len() == 0 { continue; }
-        let path = splits[0].clone();
+        let mut path = String::from("");
         let vec_len = splits.clone().len() - 1;
         for i in (0..vec_len) {
             if directory_tree.contains_key(splits[i]) { continue; }
             else {
                 let mut children: Vec<String> = Vec::new();
                 // How do I get the child in here if it is the next part of the path?
-                if (i < vec_len - 1) {
+                if i < vec_len - 1 {
                     children.append(String::from("something???"));
                 }
-                let ref = directory_tree.get_mut(splits[i])
-                directory_tree.
+                let dir_ref = directory_tree.get_mut(splits[i])
+                // directory_tree.
 
-                }
             }
         }
-
     }
-
     Ok(directory_tree)
 }
 
