@@ -131,18 +131,20 @@ async fn create_directories(client: &aws_sdk_s3::Client, bucket: &str) -> Result
         if splits.len() == 0 { continue; }
         let mut path = String::from("");
         let vec_len = splits.clone().len() - 1;
-        for i in (0..vec_len) {
-            if directory_tree.contains_key(splits[i]) { continue; }
-            else {
-                let mut children: Vec<String> = Vec::new();
-                // How do I get the child in here if it is the next part of the path?
-                if i < vec_len - 1 {
-                    children.append(String::from("something???"));
-                }
-                let dir_ref = directory_tree.get_mut(splits[i])
-                // directory_tree.
-
-            }
+        for i in 0..vec_len {
+            println!("{i}: {}", splits[i]);
+            // path.push_str(&splits[i].to_string());
+            // if directory_tree.contains_key(&splits[i]) { continue; }
+            // else {
+            //     let mut children: Vec<String> = Vec::new();
+            //     // How do I get the child in here if it is the next part of the path?
+            //     if i < vec_len - 1 {
+            //         children.append(String::from("something???"));
+            //     }
+            //     let dir_ref = directory_tree.get_mut(splits[i])
+            //     // directory_tree.
+            //
+            // }
         }
     }
     Ok(directory_tree)
@@ -191,31 +193,31 @@ async fn list_bucket(client: &aws_sdk_s3::Client, bucket: &str) -> Result<Vec<St
     Ok(keys)
 }
 
-async fn put_bucket(
-    client: &aws_sdk_s3::Client,
-    bucket: &str,
-    src: String,  // How the fuck am I going to get this? do I just want a local file path?
-    dst: String,
-) -> Result<(), s3::Error> {
-    // Prepare a ByteStream around the file, and upload the object using that ByteStream.
-    let body = aws_sdk_s3::primitives::ByteStream::from_path(filepath)
-        .await
-        .map_err(|err| {
-            S3ExampleError::new(format!(
-                "Failed to create bytestream for {filepath:?} ({err:?})"
-            ))
-        })?;
-    let resp = client
-        .put_object()
-        .bucket(bucket)
-        .key(dst)
-        .body(body)
-        .send()
-        .await?;
-    
-    // Retrieve the just-uploaded object.
-    let resp = client.get_object().bucket(bucket).key(key).send().await?;
-    println!("etag: {}", resp.e_tag().unwrap_or("(missing)"));
-    println!("version: {}", resp.version_id().unwrap_or("(missing)"));
-    Ok(())
-}
+// async fn put_bucket(
+//     client: &aws_sdk_s3::Client,
+//     bucket: &str,
+//     src: String,  // How the fuck am I going to get this? do I just want a local file path?
+//     dst: String,
+// ) -> Result<(), s3::Error> {
+//     // Prepare a ByteStream around the file, and upload the object using that ByteStream.
+//     let body = aws_sdk_s3::primitives::ByteStream::from_path(filepath)
+//         .await
+//         .map_err(|err| {
+//             S3ExampleError::new(format!(
+//                 "Failed to create bytestream for {filepath:?} ({err:?})"
+//             ))
+//         })?;
+//     let resp = client
+//         .put_object()
+//         .bucket(bucket)
+//         .key(dst)
+//         .body(body)
+//         .send()
+//         .await?;
+//     
+//     // Retrieve the just-uploaded object.
+//     let resp = client.get_object().bucket(bucket).key(key).send().await?;
+//     println!("etag: {}", resp.e_tag().unwrap_or("(missing)"));
+//     println!("version: {}", resp.version_id().unwrap_or("(missing)"));
+//     Ok(())
+// }
