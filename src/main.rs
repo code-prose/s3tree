@@ -1,7 +1,7 @@
 use aws_sdk_s3 as s3;
 use clap::Parser;
 use std::io;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 
 // Sad to see this go
@@ -30,7 +30,7 @@ struct Args {
     interactive: bool,
 }
 
-type DirectoryTree = HashMap<String, Vec<String>>;
+type DirectoryTree = HashMap<String, HashSet<String>>;
 // What am I going to use this for?
 // Do I really need this or am I constructing this for the sake of using language features?
 // If I do use it, do I need to create a impl from_string?
@@ -109,6 +109,7 @@ async fn main() -> Result<(), s3::Error> {
         .build();
     let client = aws_sdk_s3::Client::from_conf(s3_config);
     let directories = create_directories(&client, &args.bucket).await?;
+    println!("{directories:?}");
     // TODO:
     // Will need to handle some type of exceptions here... Might want to handle in the arg loop
     let result = arg_loop(&client, &args.bucket, directories).await;
@@ -122,30 +123,34 @@ async fn main() -> Result<(), s3::Error> {
 }
 
 async fn create_directories(client: &aws_sdk_s3::Client, bucket: &str) -> Result<DirectoryTree, s3::Error> {
-    let directory_tree = DirectoryTree::new();
+    let mut directory_tree = DirectoryTree::new();
     let keys = list_bucket(client, bucket).await?;
     for key in keys {
         let splits: Vec<String> = split_path(key);
         // there is a consideration here to make..
         // but given that "directories" don't really exist in s3 - it shouldn't cause any issues
         if splits.len() == 0 { continue; }
-        let mut path = String::from("");
+        let mut path = String::from(bucket);
         for i in 0..splits.len() {
+            if directory_tree.contains_key(&path) {
+                let dir_ref = directory_tree.get_mut(&path);
+                (*dir_ref.unwrap()).insert(splits[i].clone());
+                let check = directory_tree.get(&path);
+                println!("{check:?}");
+            }
+            else {
+                let mut children: HashSet<String> = HashSet::new();
+                children.insert(splits[i].clone());
+                directory_tree.insert(path.clone(), children);
+                println!("{directory_tree:?}");
+            }
             println!("{i}: {}", splits[i]);
-            // path.push_str(&splits[i].to_string());
-            // if directory_tree.contains_key(&splits[i]) { continue; }
-            // else {
-            //     let mut children: Vec<String> = Vec::new();
-            //     // How do I get the child in here if it is the next part of the path?
-            //     if i < vec_len - 1 {
-            //         children.append(String::from("something???"));
-            //     }
-            //     let dir_ref = directory_tree.get_mut(splits[i])
-            //     // directory_tree.
-            //
-            // }
+            path.push_str("/");
+            path.push_str(&splits[i]);
+            println!("appended: {path}");
         }
     }
+    println!("{directory_tree:?}");
     Ok(directory_tree)
 }
 
