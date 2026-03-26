@@ -130,8 +130,7 @@ async fn create_directories(client: &aws_sdk_s3::Client, bucket: &str) -> Result
         // but given that "directories" don't really exist in s3 - it shouldn't cause any issues
         if splits.len() == 0 { continue; }
         let mut path = String::from("");
-        let vec_len = splits.clone().len() - 1;
-        for i in 0..vec_len {
+        for i in 0..splits.len() {
             println!("{i}: {}", splits[i]);
             // path.push_str(&splits[i].to_string());
             // if directory_tree.contains_key(&splits[i]) { continue; }
