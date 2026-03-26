@@ -1,6 +1,8 @@
 use aws_sdk_s3 as s3;
 use clap::Parser;
 use std::io;
+use std::io::stdout;
+use std::io::Write;
 use std::collections::{HashMap, HashSet};
 
 
@@ -44,16 +46,31 @@ enum Commands {
 }
 
 async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, tree: DirectoryTree) -> Result<(), s3::Error> {
+    // this is not redundant - I'm just not modifying it yet
+    let mut curr_path = bucket.clone();
     loop {
+        print!("s3://{curr_path}> ");
+        // should I handle this shit?
+        let _ = stdout().flush();
+
         let mut cmd = String::new();
         io::stdin()
             .read_line(&mut cmd)
             .expect("Failed to parse command");
         let cmd_vec: Vec<_> = cmd.split_whitespace().collect();
+        println!("");
         match cmd_vec[0] {
             "exit" => break,
             "ls" => {
-                // list_bucket(client, bucket).await?;
+                // I need to check if there are args
+                if cmd_vec.len() > 1 {
+                    todo!("Need to implement ls for directories other than current")
+                } else {
+                    let dir_contents = tree.get(curr_path).unwrap();
+                    for entry in dir_contents {
+                        println!("{entry}");
+                    }
+                }
                 println!("ls!");
             }
             "cd" => {
@@ -134,7 +151,11 @@ async fn create_directories(client: &aws_sdk_s3::Client, bucket: &str) -> Result
         for i in 0..splits.len() {
             if directory_tree.contains_key(&path) {
                 let dir_ref = directory_tree.get_mut(&path);
-                (*dir_ref.unwrap()).insert(splits[i].clone());
+                let mut entry = splits[i].clone();
+                if i < splits.len() - 1 {
+                    entry.push('/');
+                }
+                (*dir_ref.unwrap()).insert(entry);
                 let check = directory_tree.get(&path);
                 println!("{check:?}");
             }
