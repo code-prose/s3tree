@@ -69,6 +69,10 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, tree: DirectoryTree
                             println!("{entry}");
                         }
                     }
+                    else {
+                        let invalid = cmd_vec[1];
+                        println!("Invalid directory: {invalid}");
+                    }
                 } else if cmd_vec.len() == 1 {
                     let dir_contents = tree.get(curr_path).unwrap();
                     for entry in dir_contents {
