@@ -62,16 +62,22 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, tree: DirectoryTree
         match cmd_vec[0] {
             "exit" => break,
             "ls" => {
-                // I need to check if there are args
-                if cmd_vec.len() > 1 {
-                    todo!("Need to implement ls for directories other than current")
-                } else {
+                if cmd_vec.len() == 2 {
+                    if tree.contains_key(cmd_vec[1]) {
+                        let dir_contents = tree.get(cmd_vec[1]).unwrap();
+                        for entry in dir_contents {
+                            println!("{entry}");
+                        }
+                    }
+                } else if cmd_vec.len() == 1 {
                     let dir_contents = tree.get(curr_path).unwrap();
                     for entry in dir_contents {
                         println!("{entry}");
                     }
+                } else {
+                    println!("usage: ls [optional directory]");
+
                 }
-                println!("ls!");
             }
             "cd" => {
                 // cd foo/bar/?
