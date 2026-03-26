@@ -71,7 +71,7 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, tree: DirectoryTree
                     }
                     else {
                         let invalid = cmd_vec[1];
-                        println!("Invalid directory: {invalid}");
+                        println!("invalid directory: {invalid}");
                     }
                 } else if cmd_vec.len() == 1 {
                     let dir_contents = tree.get(curr_path).unwrap();
@@ -104,8 +104,7 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, tree: DirectoryTree
             }
             "cp" => {
                 if cmd_vec.len() == 1 {
-                    println!("Usage:                           ");
-                    println!("  cp [s3 src path] [s3 dst path]:");
+                    println!("usage: cp [s3 src path] [s3 dst path]:");
                 }
                 println!("s3 copy!")
 
