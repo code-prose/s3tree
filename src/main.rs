@@ -84,6 +84,22 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, tree: DirectoryTree
                 }
             }
             "cd" => {
+                if cmd_vec.len() == 2 {
+                    if tree.contains_key(cmd_vec[1]) {
+                        curr_path = cmd_vec[1];
+                    } else if cmd_vec[1] == ".." {
+                        let splits = split_path(curr_path.to_string());
+                        todo!("Need to chop off last section after the /");
+                        todo!("What if they do cd shared? is that valid? what about cd shared/? How do I do auto-complete?");
+                        // curr_path = 
+                    } else {
+                        let invalid = cmd_vec[1];
+                        println!("invalid directory: {invalid}");
+                    }
+                }
+                else {
+                    println!("usage: cd [path to directory]");
+                }
                 // cd foo/bar/?
                 println!("change dir!");
             }
@@ -186,6 +202,10 @@ async fn create_directories(client: &aws_sdk_s3::Client, bucket: &str) -> Result
 
 fn split_path(key: String) -> Vec<String>{
     key.split("/").map(|v| v.to_string()).collect::<Vec<_>>()
+}
+
+fn join(keys: Vec<String>, join_char: char) -> String {
+   todo!() 
 }
 
 async fn list_bucket(client: &aws_sdk_s3::Client, bucket: &str) -> Result<Vec<String>, s3::Error> {
