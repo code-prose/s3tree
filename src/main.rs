@@ -205,7 +205,11 @@ fn split_path(key: String) -> Vec<String>{
 }
 
 fn join(keys: Vec<String>, join_char: char) -> String {
-   todo!() 
+    let mut joined = String::from("");
+    for key in keys {
+        joined.push_str(&key.clone());
+    }
+    joined
 }
 
 async fn list_bucket(client: &aws_sdk_s3::Client, bucket: &str) -> Result<Vec<String>, s3::Error> {
