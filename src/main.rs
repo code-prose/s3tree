@@ -5,23 +5,6 @@ use std::io::stdout;
 use std::io::Write;
 use std::collections::{HashMap, HashSet};
 
-
-// Sad to see this go
-// struct Root {
-//     children: Vec<Box<Directory>>,
-//     name: String,
-// }
-// enum Parent {
-//     Directory(Box<Directory>),
-//     Parent(Root),
-// }
-//
-// struct Directory {
-//     children: Vec<Box<Directory>>,
-//     parent: Parent,
-//     name: String,
-// }
-
 #[derive(Parser, Debug)]
 struct Args {
     #[arg(short, long)]
@@ -33,17 +16,6 @@ struct Args {
 }
 
 type DirectoryTree = HashMap<String, HashSet<String>>;
-// What am I going to use this for?
-// Do I really need this or am I constructing this for the sake of using language features?
-// If I do use it, do I need to create a impl from_string?
-#[derive(Parser, Debug)]
-enum Commands {
-    Copy,
-    Move,
-    List, // is it possible to add additional flags like -l?
-    ChangeDirectory,
-    Tree,
-}
 
 async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, tree: DirectoryTree) -> Result<(), s3::Error> {
     // this is not redundant - I'm just not modifying it yet
@@ -169,8 +141,6 @@ async fn create_directories(client: &aws_sdk_s3::Client, bucket: &str) -> Result
     let keys = list_bucket(client, bucket).await?;
     for key in keys {
         let splits: Vec<String> = split_path(key);
-        // there is a consideration here to make..
-        // but given that "directories" don't really exist in s3 - it shouldn't cause any issues
         if splits.len() == 0 { continue; }
         let mut path = String::from(bucket);
         for i in 0..splits.len() {
@@ -213,7 +183,6 @@ fn join(keys: Vec<String>, join_char: char) -> String {
 }
 
 async fn list_bucket(client: &aws_sdk_s3::Client, bucket: &str) -> Result<Vec<String>, s3::Error> {
-    // List the buckets in this account
     let mut objects = client
         .list_objects_v2()
         .bucket(bucket)
