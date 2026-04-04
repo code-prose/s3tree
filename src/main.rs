@@ -21,7 +21,6 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, tree: DirectoryTree
     let mut curr_path = bucket.clone();
     loop {
         print!("s3://{curr_path}> ");
-        // should I handle this shit?
         let _ = stdout().flush();
 
         let mut cmd = String::new();
@@ -71,7 +70,6 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, tree: DirectoryTree
                 else {
                     println!("usage: cd [path to directory]");
                 }
-                // cd foo/bar/?
                 println!("change dir!");
             }
             "mv" => {
