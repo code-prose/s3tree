@@ -61,6 +61,8 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, tree: DirectoryTree
                         let splits = split_path(curr_path.to_string());
                         todo!("Need to chop off last section after the /");
                         todo!("What if they do cd shared? is that valid? what about cd shared/? How do I do auto-complete?");
+                        // what? what was I saying here? shared/ vs shared?
+                        // what about ../something?
                         // curr_path = 
                     } else {
                         let invalid = cmd_vec[1];
