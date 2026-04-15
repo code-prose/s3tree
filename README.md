@@ -1,4 +1,4 @@
-# S3Tree (Str33?)
+# S3Tree
 Command line interface built on top of aws cli to provide an interactive interface for s3 similar to traversing directories on a CLI.
 
 # requirements
@@ -13,6 +13,4 @@ Command line interface built on top of aws cli to provide an interactive interfa
 # Resources
 - Written alongside [Command Line Applications in Rust](https://rust-cli.github.io/book/index.html)
 - Built on top of [aws cli](https://aws.amazon.com/cli/)
-- Do I want to look into [ratatui](https://ratatui.rs/examples/apps/demo/)?
-- Built on top of [ELM Architecture](https://guide.elm-lang.org/architecture/)
 - [Docker](https://www.docker.com/) and [LocalStack](https://www.localstack.cloud/) to emulate S3 bucket for development
