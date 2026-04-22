@@ -27,8 +27,10 @@ async fn arg_loop(client: &aws_sdk_s3::Client, bucket: &str, tree: DirectoryTree
         io::stdin()
             .read_line(&mut cmd)
             .expect("Failed to parse command");
+        // `cmd` does not live long enough to be borrowed? how?
         let cmd_vec: Vec<_> = cmd.split_whitespace().collect();
-        println!("");
+
+        // is there a better way to do this? more idiomatic rust?
         match cmd_vec[0] {
             "exit" => break,
             "ls" => {
